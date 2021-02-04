@@ -2,6 +2,8 @@
 
 # Networking to support vlans
 
+# Assuming you have a vlan trunk consisting of vlan2 and vlan3 you could do vlan tagging.
+
 /etc/netplan/00-installer-config.yaml
 ````
 network:
