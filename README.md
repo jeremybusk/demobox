@@ -2,6 +2,16 @@
 
 This is a WIP
 
+# Powerdns
+- https://github.com/PowerDNS/pdns
+- https://www.dnsdist.org/
+- https://www.powerdns.com/recursor.html
+- https://www.powerdns.com/auth.html
+
+# CoreDNS
+- https://github.com/coredns/coredns
+- https://coredns.io/manual/configuration/
+
 # What is does
 - Creates VM using LXD API
 - Inits LXD, Docker and actions runner service on VM
