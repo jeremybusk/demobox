@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+set -e
+# lxc rm -f pdns1 && lxc launch ubuntu:focal pdns1 && sleep 10 && lxc file push install-pdns pdns1//root/install-pdns && lxc exec pdns1 -- /root/install-pdns
+
+install_pdns(){
+  demo_domain=example.com
+  listen_port=11053
+  echo "deb [arch=amd64] http://repo.powerdns.com/ubuntu focal-auth-master main" > /etc/apt/sources.list.d/pdns.list
+
+  echo "Package: pdns-*
+  Pin: origin repo.powerdns.com
+  Pin-Priority: 600" > /etc/apt/preferences.d/pdns
+
+  curl https://repo.powerdns.com/CBC8B383-pub.asc | sudo apt-key add - &&
+  sudo apt-get update &&
+  sudo apt-get install -y pdns-server pdns-backend-sqlite3 sqlite3
+  sudo sqlite3 /var/lib/powerdns/pdns.sqlite3 < /usr/share/doc/pdns-backend-sqlite3/schema.sqlite3.sql
+  sudo cp /usr/share/pdns-backend-sqlite3/pdns.local.gsqlite3.conf /etc/powerdns/pdns.d/
+  echo "local-port=$listen_port" > /etc/powerdns/pdns.d/custom.conf
+  sudo systemctl restart pdns
+  pdnsutil create-zone $demo_domain ns1.$demo_domain
+  pdnsutil add-record $demo_domain ns1 A 192.168.1.2
+  pdnsutil add-record $demo_domain jtest CNAME uvoo.io
+  pdnsutil list-zone $demo_domain
+  pdnsutil show-zone $demo_domain
+  dig DS $demo_domain +short @127.0.0.1 -p $listen_port 
+  dig -p $listen_port @127.0.0.1 jtest.$demo_domain +short
+}
+
+install_pdns

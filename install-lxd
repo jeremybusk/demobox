@@ -1,0 +1,84 @@
+#!/usr/bin/env bash
+set -ex
+
+
+destroy(){
+  snap remove lxd | true
+  zpool destroy tank | true
+}
+
+
+install_lxd(){
+  apt install -y zfsutils-linux
+  snap install lxd --channel=latest/stable
+  diskpath=/data/disk1.img
+  mkdir -p /data
+  truncate --size 10G $diskpath
+  sleep 10
+  zpool create tank /data/disk1.img
+  zfs create -o mountpoint=none tank/lxd
+  zpool status
+  zfs list
+  sleep 10
+  du -sh $diskpath
+
+  cat <<EOF | lxd init --preseed
+# Daemon settings
+config:
+  core.https_address: 0.0.0.0:9999
+  core.trust_password: sekret
+  images.auto_update_interval: 6
+
+# Storage pools
+storage_pools:
+- name: default
+  driver: zfs
+  config:     
+    source: tank/lxd
+
+# Network devices
+networks:
+- name: lxdbr0
+  type: bridge
+  config:
+    ipv4.address: auto
+    ipv6.address: none
+
+# Profiles
+profiles:
+- name: default
+  config: {}
+  description: "Default profile"
+  devices:
+    eth0:
+      name: eth0
+      network: lxdbr0
+      type: nic
+    root:
+      path: /
+      pool: default
+      type: disk
+- name: test-profile
+  description: "Test profile"
+  config:
+    limits.memory: 2GB
+  devices:
+    test0:
+      name: test0
+      nictype: bridged
+      parent: lxd-my-bridge
+      type: nic
+EOF
+}
+
+
+test_lxd(){
+  lxc launch ubuntu:20.04 u1
+  lxc list u1
+  sleep 10
+  lxc exec u1 -- host google.com
+}
+
+destroy
+install_lxd
+test_lxd

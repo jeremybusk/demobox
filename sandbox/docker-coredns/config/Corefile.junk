@@ -1,0 +1,25 @@
+.:53 {
+       # bind 127.0.53.1 192.168.1.254 192.0.0.1 
+       bufsize 1232 
+       acl { 
+               # allow net 192.168.0.0/16 172.16.0.0/12 10.0.0.0/8 192.0.0.0/24
+               allow net 192.7.7.7/32
+               block
+       }
+       hosts { 
+               reload 0
+               fallthrough
+       }
+       loadbalance
+       forward . tls://45.90.28.0 tls://45.90.30.0 {
+               tls_servername dns.nextdns.io
+       }
+       cache {
+               success 4096
+               denial  1024
+               prefetch 512
+       }
+       prometheus :9153
+       errors
+       log
+}

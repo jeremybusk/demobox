@@ -1,0 +1,4 @@
+.:65353 {
+    ...
+    file zones/db.192.168      168.192.in-addr.arpa
+}

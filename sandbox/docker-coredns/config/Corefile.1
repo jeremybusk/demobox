@@ -1,0 +1,55 @@
+# . {
+#    log
+#    errors
+#    auto
+#    reload 10s
+#    forward . 1.1.1.1:53
+#    # If you wish to use a standard ZONE File format, uncomment the following line and customize the specified file
+#    file /etc/coredns/db.example.com example.com
+#    # If you wish to use a standard Hosts File format, uncomment the following line and customize the specified file
+#    # hosts /etc/coredns/example.com.hosts example.com
+# }
+
+# example.io:53 {
+#  errors
+#  log
+#  file /etc/coredns/zones/example.io.db
+#}
+
+#1.168.192.in-addr.arpa.arpa:53 {
+# }
+
+
+#example.net:53 {
+  # file /etc/coredns/zones/example.net example.net
+  # file /etc/coredns/zones/example.net.hosts example.net
+#  hosts /etc/coredns/zones/example.net.hosts
+  
+  # file /etc/coredns/zones/db.example.net
+#}
+
+example.com:53 {
+  # file /etc/coredns/zones/example.com
+  # file /etc/coredns/zones/example.com.hosts
+  hosts /etc/coredns/zones/example.com.hosts
+}
+
+.:53 {
+  hosts { /etc/coredns/zones/example.net.hosts }
+  hosts {
+    10.0.0.1 example.org
+    10.0.0.2 my.example.org
+    10.0.0.3 my.test.org
+    fallthrough
+  }
+    # unbound
+  errors
+  log
+  health
+  # rewrite name foo.example.com foo.default.svc.cluster.local
+  rewrite name foo.google.com www.google.com
+  # kubernetes cluster.local 10.0.0.0/24
+  file /etc/coredns/zones/example.org example.org
+  forward . /etc/resolv.conf
+  cache 30
+}
