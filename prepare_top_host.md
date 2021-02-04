@@ -23,10 +23,6 @@ network:
     brvlan3:
       interfaces: [ vlan210 ]
   vlans:
-    vlan1:
-      id: 1
-      link: bond0
-      accept-ra: no
     vlan3:
       id: 2
       link: bond0
@@ -36,7 +32,12 @@ network:
       link: bond0
       accept-ra: no
 
-#    brvlanexample:
+# Example of vlan1 with ip address
+#    vlan1:
+#      id: 1
+#      link: bond0
+#      accept-ra: no
+#    brvlan1:
 #      interfaces: [ vlan1 ]
 #      dhcp4: no
 #      dhcp6: no
