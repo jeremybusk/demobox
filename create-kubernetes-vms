@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+set -ex
+
+disk_size=50GB
+
+check_network(){
+  host=$1
+  until lxc exec $host -- bash -c "host google.com"; do
+    echo "Waiting for network connection"
+    sleep 5
+  done
+}
+
+
+create_vm(){
+  host=$1
+  lxc init ubuntu:focal $host --vm
+  lxc config set $host limits.cpu=8 limits.memory=16GB
+  lxc config device override $host root size=$disk_size
+  lxc start $host
+  lxc list $host
+  check_network $host
+  sleep 10 
+  # lxc exec $host -- snap install docker 
+  # install_lxd $host
+  # install_docker $host
+}
+
+
+install_lxd(){
+  host=$1
+  # lxc exec $host -- snap install lxd 
+  lxc file push install-lxd $host/root/install-lxd
+  lxc exec $host -- /root/install-lxd
+}
+
+
+install_docker(){
+  host=$1
+  lxc file push install-docker $host/root/install-docker
+  # lxc exec $host -- snap install docker 
+  lxc exec $host -- /root/install-docker 
+
+}
+
+
+install_actions_runner(){
+  host=$1
+  lxc file push install-actions-runner $host/root/install-actions-runner
+  lxc exec $host -- /root/install-actions-runner
+}
+
+main(){
+  host_count=3
+  prefix=k
+  # for i in $(seq 1 $host_count); do
+  for i in $(seq 1 $host_count); do
+    host=$prefix$i
+    lxc rm -f $host | true
+    create_vm $host 
+    # install_lxd $host 
+    # install_docker $host 
+    # install_actions_runner $host 
+  done
+}
+
+main $@
+
+
+# hosts 
+# lxc exec $host -- sudo snap install docker
