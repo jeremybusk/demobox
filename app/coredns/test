@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# set -e
+
+nslookup zone.example.com 127.0.0.1
+nslookup hosts.example.com 127.0.0.1
+nslookup zone.example.net 127.0.0.1
+nslookup hosts.example.net 127.0.0.1
+nslookup hosts.example.org 127.0.0.1
+nslookup hosts.google.com 127.0.0.1
+nslookup foo.google.com 127.0.0.1

@@ -1,0 +1,34 @@
+.:53 {
+
+  acl {
+    allow net 192.168.0.0/16 172.16.0.0/12 10.0.0.0/8 192.0.0.0/24 127.0.0.1/32
+    block
+    # allow
+  }
+
+  # Caution! If domain is in hosts file then zone files will not be used.
+  hosts hosts example.com
+
+  # Use "dig axfr example.com @ns1.example.com" to get zone from ns server with ip permissions
+  file example.com.zone example.com
+  file example.net.zone example.net
+
+  cache 30 # TTL of 30 seconds:
+  # cache {  # Use if wanted for different positive or negative caches
+  #  success 4096
+  #  denial  1024
+  #  prefetch 512
+  #}
+
+  rewrite name foo.google.com www.google.com  # Rewrites query to another one inline
+
+  # forward . 8.8.8.8  # When in doubt use google dns
+  # forward . tls://8.8.8.8 tls://8.8.4.4 {  # see loadbalance
+  # tls_servername dns.google.com
+  # }
+  forward . 10.250.170.23  # forwards queries to recursive resolver
+
+  errors
+  log
+  health
+}

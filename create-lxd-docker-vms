@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 set -ex
 
-disk_size=50GB
+disk_size=100GB
+memory_limit=12GB
+cpu_limit=8
 
 check_network(){
   host=$1
@@ -15,15 +17,15 @@ check_network(){
 create_vm(){
   host=$1
   lxc init ubuntu:focal $host --vm
-  lxc config set $host limits.cpu=8 limits.memory=16GB
+  lxc config set $host limits.cpu=$cpu_limit limits.memory=$memory_limit
   lxc config device override $host root size=$disk_size
   lxc start $host
   lxc list $host
   check_network $host
-  sleep 10 
+  # sleep 10 
   # lxc exec $host -- snap install docker 
-  install_lxd $host
-  install_docker $host
+  # install_lxd $host
+  # install_docker_ce $host
 }
 
 
@@ -40,6 +42,14 @@ install_docker(){
   lxc file push install-docker $host/root/install-docker
   # lxc exec $host -- snap install docker 
   lxc exec $host -- /root/install-docker 
+}
+
+
+install_docker_ce(){
+  host=$1
+  lxc file push install-docker-ce $host/root/install-docker-ce
+  # lxc exec $host -- snap install docker 
+  lxc exec $host -- /root/install-docker-ce
 
 }
 
@@ -51,16 +61,15 @@ install_actions_runner(){
 }
 
 main(){
-  host_count=4
-  host_count=2
+  host_count=3
   # for i in $(seq 1 $host_count); do
-  for i in $(seq 2 $host_count); do
+  for i in $(seq 1 $host_count); do
     host=d$i
     lxc rm -f $host | true
     create_vm $host 
     install_lxd $host 
-    install_docker $host 
-    install_actions_runner $host 
+    install_docker_ce $host 
+    # install_actions_runner $host 
   done
 }
 
