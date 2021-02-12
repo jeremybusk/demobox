@@ -1,10 +1,14 @@
 #!/usr/bin/env bash
 # set -e
+port=153
+rhost=localhost
 
-nslookup zone.example.com 127.0.0.1
-nslookup hosts.example.com 127.0.0.1
-nslookup zone.example.net 127.0.0.1
-nslookup hosts.example.net 127.0.0.1
-nslookup hosts.example.org 127.0.0.1
-nslookup hosts.google.com 127.0.0.1
-nslookup foo.google.com 127.0.0.1
+nslookup -port=$port zone.example.com $rhost 
+nslookup -port=$port hosts.example.com $rhost 
+nslookup -port=$port zone.example.net $rhost 
+nslookup -port=$port hosts.example.net $rhost 
+nslookup -port=$port hosts.example.org $rhost 
+nslookup -port=$port hosts.google.com $rhost 
+nslookup -port=$port foo.google.com $rhost 
+dig -p $port @$rhost hosts.example.com. A +dnssec +multiline
+dig -p $port @$rhost hosts.example.net. A +dnssec +multiline
