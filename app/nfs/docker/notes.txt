@@ -1,0 +1,2 @@
+docker --tlsverify --tlscacert=ca.pem --tlscert=cert.pem --tlskey=key.pem \
+    -H=$HOST:2376 exec $containerId $cmd

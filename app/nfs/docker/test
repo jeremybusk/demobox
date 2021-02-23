@@ -1,0 +1,10 @@
+# apt install nfs-client  # on all swarm nodes
+
+docker service rm nfs-service
+sleep 3
+docker service create -d \
+  --name nfs-service \
+  --mount 'type=volume,source=nfsvolume,target=/app,volume-driver=local,volume-opt=type=nfs,volume-opt=device=:/d,volume-opt=o=addr=10.64.10.23' \
+  nginx:latest
+docker node ps $(docker node ls -q) | grep nginx
+  # --mount 'type=volume,source=nfsvolume,target=/app,volume-driver=local,volume-opt=type=nfs,volume-opt=device=:/d,volume-opt=o=addr=nas' \
