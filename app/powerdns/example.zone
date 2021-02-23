@@ -1,0 +1,17 @@
+$ORIGIN .
+networks7.com   1500    IN      SOA     ns1.uvoo.io hostmaster.networks7.com 2021020902 10800 3600 2419200 3600
+networks7.com   60      IN      A       204.15.86.210
+networks7.com   60      IN      NS      ns1.uvoo.io
+networks7.com   60      IN      NS      ns2.uvoo.io
+combo.networks7.com     60      IN      LUA     A "ifportup(443, {'192.0.2.1', '192.0.2.2', '198.51.100.1'}" ", {selector='pickclosest'})                             "
+ifportup.networks7.com  60      IN      LUA     A "ifportup(443, {'192.0.2.1', '192.0.2.2'})"
+ifportup2.networks7.com 60      IN      LUA     A "ifportup(443, {'192.0.2.1', '192.0.2.2', '127.0.0.1','10.64.6.91'})"
+ifurl.networks7.com     60      IN      LUA     A "ifurlup('https://www.uvoo.io/', {'192.168.1.1', '192.168.1.2','93.184.216.34'})"
+jj1.networks7.com       60      IN      CNAME   .
+jj2.networks7.com       60      IN      CNAME   .
+jtest.networks7.com     60      IN      A       192.168.1.1
+jtest2.networks7.com    60      IN      A       192.168.1.2
+jtest3.networks7.com    60      IN      A       192.168.1.1
+lua1.networks7.com      60      IN      LUA     A "ifurlup('https://www.uvoo.io/', '192.168.1.1', '192.168.1.2')"
+pickclosest.networks7.com       60      IN      LUA     A "pickclosest({'192.0.2.1','192.0.2.2','198.51.100.1'})"
+portupold.networks7.com 60      IN      LUA     A "ifportup(443, {'192.0.2.1', '192.0.2.2', '127.0.0.1','10.64.6.91'})"

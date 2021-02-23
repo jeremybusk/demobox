@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -e
+demo_domain=jtest.com
+dnf install -y bind-utils nano
+pdnsutil create-zone $demo_domain ns1.$demo_domain
+pdnsutil add-record $demo_domain ns1 A 192.168.1.2
+pdnsutil add-record $demo_domain jtest CNAME uvoo.io
+pdnsutil list-zone $demo_domain
+pdnsutil show-zone $demo_domain
+dig DS $demo_domain +short @127.0.0.1 -p $listen_port
+dig -p $listen_port @127.0.0.1 jtest.$demo_domain +short
+# docker cp create-demo-zone actions-dns-platform_pdns-master_1:/tmp
+export EDITOR=nano
+pdnsutil edit-zone $demo_domain 

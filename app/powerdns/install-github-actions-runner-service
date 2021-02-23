@@ -1,0 +1,88 @@
+#!/usr/bin/env bash
+# Installs github actions runner as a service on newer ubuntu hosts
+set -e
+
+[[ -f /etc/os-release ]] && . /etc/os-release
+if [[ "$NAME" == "Ubuntu" ]] && [[ $VERSION_ID > 20 ]]; then
+  echo "I: Installing on $NAME $VERSION_ID."
+else
+  echo "E: Unsupported Operating System!"
+  exit 1
+fi
+
+
+function user_add() {
+  username=$1
+  if ! [[ $(getent passwd $username)  ]]; then
+    echo "Adding user $username"
+    sudo adduser \
+      --system \
+      --shell /bin/bash \
+      --gecos "Github actions runner user" \
+      --group \
+      --disabled-password \
+      --home /home/actions-runner \
+      $username
+
+  fi
+}
+
+
+function sudo_allow_user() {
+  username=$1
+  sudo_file=/etc/sudoers.d/custom
+  sudo_text="$username ALL = (root) NOPASSWD:ALL"
+  # if ! [[ $(grep actions-runner $sudo_file) ]]; then
+  if ! [[ $(grep "$sudo_text" $sudo_file) ]]; then
+    echo "adduing $sudo_text to $sudo_file"
+    echo $sudo_text | sudo tee -a $sudo_file
+  fi
+}
+
+
+function create_service() {
+  username=$1
+  token=$2
+  if [[ $(systemctl status $username) ]]; then
+    echo "E: $username service already exits"
+    return 1
+  fi
+  homedir="/home/$username"
+  cd $homedir
+  sudo -u $username curl -O -L https://github.com/actions/runner/releases/download/v2.276.1/actions-runner-linux-x64-2.276.1.tar.gz
+  sudo tar xzf ./actions-runner-linux-x64-2.276.1.tar.gz
+  chown -R $username $homedir
+  ./config.sh --url https://github.com/jeremybusk/actions-dns-platform --token $token
+
+  sudo bash -c "cat <<EOT > /etc/systemd/system/$username.service
+[Unit]
+Description=Github Actions Systems Runner
+After=$username.service
+[Service]
+User=actions-runner
+WorkingDirectory=/home/actions-runner
+ExecStart=/$homedir/run.sh
+ExecReload=/bin/kill -SIGUSR1 \$MAINPID
+[Install]
+WantedBy=multi-user.target
+EOT"
+sudo systemctl enable $username.service
+sudo systemctl start $username.service
+systemctl is-active $username
+systemctl is-enabled $username
+}
+
+
+main(){
+  if [[ "$#" -lt 1 ]]; then
+    echo "Usage: $0 <github actions token>"
+    return
+  fi
+  token=$1
+  username=actions-runner
+  user_add $username
+  sudo_allow_user $username
+  create_service $username $token
+}
+
+main "$@"
