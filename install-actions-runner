@@ -2,6 +2,17 @@
 # Installs github actions runner as a service on newer ubuntu hosts
 set -ex
 
+
+if (( $# < 1 )); then
+    echo "Usage: $0 <github repourl>"
+    echo "Example $0 https://github.com/jeremybusk/demobox"
+    exit 1
+fi
+
+github_repo_url=$1
+runner_version="2.277.1"
+
+
 [[ -f /etc/os-release ]] && . /etc/os-release
 if [[ "$NAME" == "Ubuntu" ]] && [[ $VERSION_ID > 20 ]]; then
   echo "I: Installing on $NAME $VERSION_ID."
@@ -9,6 +20,7 @@ else
   echo "E: Unsupported Operating System!"
   exit 1
 fi
+
 
 
 function user_add() {
@@ -65,9 +77,9 @@ add_service() {
   fi
   homedir="/home/$username"
   cd $homedir
-  sudo -u $username curl -O -L https://github.com/actions/runner/releases/download/v2.276.1/actions-runner-linux-x64-2.276.1.tar.gz
-  sudo -u $username tar xzf ./actions-runner-linux-x64-2.276.1.tar.gz
-  sudo -u $username ./config.sh --url https://github.com/jeremybusk/actions-lxd-docker-demo
+  sudo -u $username curl -O -L https://github.com/actions/runner/releases/download/v${runner_version}/actions-runner-linux-x64-${runner_version}.tar.gz
+  sudo -u $username tar xzf ./actions-runner-linux-x64-${runner_version}.tar.gz
+  sudo -u $username ./config.sh --url ${github_repo_url}
   # chown -R $username $homedir
 
   sudo bash -c "cat <<EOT > /etc/systemd/system/$username.service
