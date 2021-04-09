@@ -12,8 +12,8 @@ This is a WIP
 - https://github.com/coredns/coredns
 - https://coredns.io/manual/configuration/
 
+On linux host
 ```
-ssh txd1-sandbox
 mkdir src
 cd src
 git clone https://github.com/jeremybusk/demobox
