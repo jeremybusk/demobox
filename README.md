@@ -12,6 +12,16 @@ This is a WIP
 - https://github.com/coredns/coredns
 - https://coredns.io/manual/configuration/
 
+```
+ssh txd1-sandbox
+mkdir src
+cd src
+git clone https://github.com/jeremybusk/demobox
+cd demobox/app/coredns
+cat Corefile
+./start
+```
+
 # What is does
 - Creates VM using LXD API
 - Inits LXD, Docker and actions runner service on VM
