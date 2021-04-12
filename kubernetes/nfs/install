@@ -1,0 +1,12 @@
+# Centos 8
+```
+sudo dnf install nfs-utils
+systemctl enable --now nfs-server
+systemctl status nfs-server
+```
+
+
+# Ubuntu NFS Client
+```
+sudo apt install nfs-common
+```

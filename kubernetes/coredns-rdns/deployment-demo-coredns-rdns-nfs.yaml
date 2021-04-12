@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-coredns-rdns-nfs 
+  labels:
+    app: demo-coredns-rdns-nfs 
+spec:
+  replicas: 3 
+  selector:
+    matchLabels:
+      app: demo-coredns-rdns-nfs 
+  template:
+    metadata:
+      labels:
+        app: demo-coredns-rdns-nfs 
+    spec:
+      containers:
+      - name: demo-coredns-rdns-nfs
+        image: jeremybusk/coredns-rdns:latest
+        ports:
+        - containerPort: 53 
+          protocol: TCP
+        - containerPort: 53 
+          protocol: UDP 
+        volumeMounts:
+        - mountPath: /conf
+          name: demo-coredns-rdns-nfs
+      volumes:
+      - name:  demo-coredns-rdns-nfs
+        nfs:
+          server: nas.uvoo.io
+          path: /nas/demo-coredns-rdns/conf

@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -e 
+shopt -s expand_aliases
+alias kubectl='microk8s kubectl'
+
+fqdn=yahoo.com
+# ip=$(kubectl get pods coredns-rdns -o wide --no-headers | awk '{print $6}')
+# nslookup -port=53 $fqdn $ip 
+
+port=$(kubectl get svc demo-coredns-rdns-nfs --no-headers | awk '{print $5}' | awk -F/ '{print $1}' | awk -F: '{print $2}')
+for host in k1 k2 k3; do
+  echo $host
+  nslookup -port=$port $fqdn $host 
+  nslookup -port=$port 10.0.0.1 $host 
+  # dig -p $port yahoo.com @$host
+done

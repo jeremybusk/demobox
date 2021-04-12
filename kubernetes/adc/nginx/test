@@ -1,0 +1,12 @@
+!/usr/bin/env bash
+set -e
+
+# export PGPASSFILE=/etc/nginx/tests/test.pgpass
+export PGPASSFILE=./test.pgpass
+psql -h 127.0.0.1 -p 9001 -U demouser -d demodb < sqltest.sql
+
+count=50
+for i in $(seq 1 $count); do
+  echo $i
+  psql -h adc -p 9001 -U demouser -d demodb -c "select current_user;"
+done

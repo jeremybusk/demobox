@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -x
+shopt -s expand_aliases
+alias kubectl='microk8s kubectl'
+
+kubectl delete -f deployment.yml 
+kubectl delete -f service.yml
+kubectl delete -f statefulset.yml
+kubectl delete -f storageclass.yml
+kubectl delete -f configmap.yml
+kubectl delete -f storage.yml

@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: demo-coredns-rdns-nfs
+spec:
+  containers:
+  - name: demo-coredns-rdns-nfs
+    image: jeremybusk/coredns-rdns:latest
+    volumeMounts:
+    - mountPath: /conf
+      name: demo-coredns-rdns-nfs 
+  volumes:
+  - name:  demo-coredns-rdns-nfs 
+    nfs:
+      server: nas.uvoo.io 
+      path: /nas/demo-coredns-rdns/conf

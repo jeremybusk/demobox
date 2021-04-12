@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -e
+shopt -s expand_aliases
+alias kubectl='microk8s kubectl'
+kubectl apply -f mysql-pv.yml
+kubectl apply -f mysql-deployment.yml 
+
+# kubectl get svc postgres
+# kubectl get pods -o wide 
+kubectl get pods -l app=mysql
+kubectl describe pvc mysql-pv-claim
+
+exit
+
+kubectl run -it --rm --image=mysql:5.6 --restart=Never mysql-client -- mysql -h mysql-68579b78bb-mdk5x -ppassword
+or
+kubectl get pods -l app=mysql -o wide
+mysql -ppassword -h 10.1.195.132
+
+# psql -h localhost -U postgresadmin1 --password -p 31070 postgresdb

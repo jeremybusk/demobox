@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -e
+
+file=~/.pgpass
+echo "127.0.0.1:9001:demodb:demouser:demopass" > $file
+chmod 0600 $file 

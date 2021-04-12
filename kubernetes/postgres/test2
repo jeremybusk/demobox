@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+set -e
+
+
+cmd(){
+  table=t_$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 12 | head -n 1)
+  psql -h adc -p 9001 -U demouser -d demodb -v "ON_ERROR_STOP=1"  <<EOF
+BEGIN TRANSACTION;
+SELECT current_user;
+CREATE TABLE $table(name text);
+\dt;
+DROP TABLE $table;
+\dt;
+COMMIT TRANSACTION;
+EOF
+}
+
+
+test_load(){
+  count=5
+  for i in $(seq 1 $count); do
+    echo $i
+    cmd
+  done
+}
+
+
+loop(){
+  count=5
+  for i in $(seq 1 $count); do
+    test_load &
+  done
+}
+
+
+loop
+
+
+
+# psql -h adc -p 9001 -U demouser -d demodb -c "select current_user;"
+# psql -h adc -p 9001 -U demouser -d demodb < sqltest.sql"

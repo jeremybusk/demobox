@@ -1,0 +1,42 @@
+# . {
+#    reload 10s
+#    erratic
+#}
+.:53 {
+  reload 10s
+  # bind 127.0.53.1 192.168.1.254 192.0.0.1
+  bufsize 1232
+  acl {
+    allow net 192.168.0.0/16 172.16.0.0/12 10.0.0.0/8 192.0.0.0/24
+    # allow net 192.7.7.7/32
+    block
+  }
+  hosts {
+    10.0.0.1 host1.example.org
+    10.0.0.2 host2..example.org
+    10.0.0.3 host3.test.org
+    10.0.0.4 host4.test.org
+    10.0.0.5 host5.test.org
+    10.0.0.6 host6.test.org
+    10.0.0.7 host7.test.org
+    10.0.0.8 host8.test.org
+    reload 0
+    fallthrough
+  }
+    loadbalance
+    # forward . tls://45.90.28.0 tls://45.90.30.0 {
+    # tls_servername dns.nextdns.io
+    forward . tls://8.8.8.8 tls://8.8.4.4 {
+    tls_servername dns.google.com
+  }
+  cache {
+    success 4096
+    denial  1024
+    prefetch 512
+  }
+  prometheus :9153
+  errors
+  log
+  # file /etc/coredns/zones/example.org example.org
+  # rewrite name foo.google.com www.google.com
+}

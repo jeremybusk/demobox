@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+set -e
+shopt -s expand_aliases
+alias kubectl='microk8s kubectl'
+nodeip=$(kubectl get svc | grep postgres-service | awk '{print $3}')
+podip=$(kubectl get pod -o wide | grep "^postgres-" | grep -v state | awk '{print $6}')
+statefulsetip=$(kubectl get pod -o wide | grep "^postgres-statefulset" | awk '{print $6}')
+export PGHOST=$podip
+export PGDATABASE=demodb
+export PGUSER=demouser
+export PGPASSWORD=demopass
+sleep=1
+
+
+get_info(){
+  kubectl get pods 
+  kubectl get svc
+  kubectl get pvc 
+  kubectl get pv 
+  kubectl get deploy 
+}
+
+
+test_pg(){
+  echo "PGPASSWORD=$PGPASSWORD psql -h $PGHOST -U $PGUSER -d $PGDATABASE"
+  psql < sqltest.sql 
+}
+
+
+echo "Testing podip"
+sleep  $sleep 
+test_pg
+export PGHOST=$nodeip
+echo "Testing nodeip"
+sleep $sleep 
+test_pg
+echo "Testing sateful set ip"
+sleep $sleep 
+export PGHOST=$statefulsetip
+test_pg
