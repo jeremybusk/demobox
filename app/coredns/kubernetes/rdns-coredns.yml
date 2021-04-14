@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: rdns-coredns
+  labels:
+    run: rdns-coredns
+spec:
+  type: NodePort
+  ports:
+  - port: 53
+    targetPort: 53
+    protocol: TCP
+    name: dns-tcp
+  - port: 53
+    protocol: UDP
+    name: dns-udp
+  selector:
+    run: rdns-coredns
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rdns-coredns
+spec:
+  selector:
+    matchLabels:
+      run: rdns-coredns
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: rdns-coredns
+    spec:
+      volumes:
+      - name: secret-volume
+        secret:
+          secretName: rdns-coredns-secret
+      - name: configmap-volume
+        configMap:
+          name: rdns-coredns-configmap
+      containers:
+      - name: rdns-coredns
+        # image: rdns-coredns:latest
+        # image: localhost:32000/rdns-coredns:latest
+        # image: docker.io/library/rdns-coredns:jtest1
+        image: rdns-coredns:jtest1
+        ports:
+        - containerPort: 53
+          protocol: UDP
+        - containerPort: 53
+          protocol: TCP

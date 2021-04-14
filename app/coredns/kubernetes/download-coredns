@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -e
+version="1.8.1"
+file="coredns_${version}_linux_amd64.tgz"
+file_sha256="bac3573274bb44545f6228d9d289fe9ae870fa78512ccd09b6a2971ec3eadca6"
+curl -sLO https://github.com/coredns/coredns/releases/download/v${version}/$file
+sha256sum -c $file.sha256
+tar xf $file
+echo "Success! Downloaded coredns executable."
+
+# curl -Ls https://github.com/coredns/coredns/releases/download/v${version}/coredns_${version}_linux_amd64.tgz | tar xz
