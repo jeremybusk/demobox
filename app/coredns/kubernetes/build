@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+set -e
+name=rdns-coredns:jtest1
+sudo docker build . -t $name 
+sudo docker save $name > $name.tar
+# sudo microk8s ctr images rm $name 
+sudo microk8s ctr image import $name.tar
+sudo microk8s ctr images ls | grep $name
+sudo microk8s.kubectl delete -f rdns-coredns.yml
+sudo microk8s.kubectl apply -f rdns-coredns.yml
+
+# Don't use this way but here it is
+# sudo docker images -a | awk '{print $3}' | xargs sudo docker rmi
+# sudo docker tag 37bf84fc7e61 10.x.x.x:32000/coredns:foo
+# sudo docker push 10.x.x.x:32000/coredns:foo
